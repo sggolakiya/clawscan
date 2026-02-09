@@ -1,0 +1,132 @@
+{
+  "credentials": {
+    "envFileAccess": {
+      "pattern": "(\\.env|dotenv|process\\.env|os\\.environ|\\$ENV|getenv)",
+      "severity": "info",
+      "description": "Accesses environment variables (may read secrets)"
+    },
+    "clawbotPaths": {
+      "pattern": "(\\.clawdbot|\\.openclaw|clawd\\.config|openclaw\\.json)",
+      "severity": "info",
+      "description": "Accesses OpenClaw configuration files"
+    },
+    "apiKeyPatterns": {
+      "pattern": "(sk-[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|xox[bpoas]-[a-zA-Z0-9-]+)",
+      "severity": "critical",
+      "description": "Contains hardcoded API key or secret token"
+    },
+    "apiKeyReferences": {
+      "pattern": "(api[_-]?key|api[_-]?secret|access[_-]?token|auth[_-]?token|bearer)",
+      "severity": "info",
+      "description": "References API key or token variable names"
+    },
+    "sshKeyAccess": {
+      "pattern": "(\\.ssh/|id_rsa|id_ed25519|authorized_keys|known_hosts)",
+      "severity": "warning",
+      "description": "Accesses SSH key files"
+    },
+    "homeDirAccess": {
+      "pattern": "(~/\\.|\\$HOME/\\.|expanduser.*\\.)",
+      "severity": "info",
+      "description": "Accesses hidden files in home directory"
+    },
+    "browserData": {
+      "pattern": "(chrome.*cookies|firefox.*cookies|safari.*cookies|Login Data|Web Data|Cookies\\.sqlite|keychain|credential.manager)",
+      "severity": "warning",
+      "description": "Accesses browser data or system credentials"
+    }
+  },
+  "execution": {
+    "evalExec": {
+      "pattern": "(\\beval\\s*\\(|\\bexec\\s*\\(|\\bexecSync\\s*\\(|\\bspawn\\s*\\(|\\bspawnSync\\s*\\(|child_process|subprocess|os\\.system|os\\.popen|\\bFunction\\s*\\()",
+      "severity": "info",
+      "description": "Uses dynamic code execution or spawns processes"
+    },
+    "shellExecution": {
+      "pattern": "(\\bsh\\s+-c|/bin/(ba)?sh|powershell|cmd\\.exe|system\\(|popen\\(|\\$\\([^)]+\\))",
+      "severity": "info",
+      "description": "Executes shell commands"
+    },
+    "downloadExecute": {
+      "pattern": "(curl.*\\|.*sh|wget.*\\|.*sh|curl.*-o.*&&.*chmod|wget.*&&.*chmod|curl.*bash|wget.*bash|pip install.*http|npm install.*http)",
+      "severity": "critical",
+      "description": "Downloads and executes remote code"
+    },
+    "reverseShell": {
+      "pattern": "(nc\\s+-[elp]|ncat\\s+-|/dev/tcp/|mkfifo|mknod.*p.*nc|bash.*>&.*/dev/tcp|socat.*exec|python.*socket.*connect.*subprocess|ruby.*TCPSocket.*exec)",
+      "severity": "critical",
+      "description": "Reverse shell pattern detected"
+    },
+    "cronPersistence": {
+      "pattern": "(crontab|/etc/cron|systemctl.*enable|launchctl|plist|/Library/LaunchAgents|rc\\.local|\\.bashrc.*>>|\\.profile.*>>|\\.zshrc.*>>)",
+      "severity": "critical",
+      "description": "Persistence mechanism detected (cron, startup scripts)"
+    }
+  },
+  "network": {
+    "httpRequests": {
+      "pattern": "(curl\\s|wget\\s|fetch\\(|axios|requests\\.|http\\.get|http\\.post|urllib|httplib|net\\.http|HttpClient)",
+      "severity": "info",
+      "description": "Makes HTTP requests"
+    },
+    "rawSockets": {
+      "pattern": "(new\\s+Socket|socket\\.socket|net\\.connect|dgram|SOCK_STREAM|SOCK_DGRAM|socket\\.create_connection)",
+      "severity": "info",
+      "description": "Creates raw network sockets"
+    },
+    "dnsExfil": {
+      "pattern": "(dns\\.resolve|nslookup|dig\\s+|resolvconf|getaddrinfo.*\\$)",
+      "severity": "info",
+      "description": "DNS-based operations (potential exfiltration)"
+    }
+  },
+  "obfuscation": {
+    "base64Exec": {
+      "pattern": "(atob\\s*\\(|Buffer\\.from\\s*\\([^)]+,\\s*['\"]base64|base64\\.b64decode|base64\\.decodebytes|base64\\s+-d|base64\\s+--decode)",
+      "severity": "info",
+      "description": "Decodes base64 data (check for code execution)"
+    },
+    "hexEncoding": {
+      "pattern": "(\\\\x[0-9a-fA-F]{2}){4,}|(0x[0-9a-fA-F]+,\\s*){4,}|fromCharCode|chr\\(\\d+\\)",
+      "severity": "info",
+      "description": "Contains hex-encoded or char-code data"
+    },
+    "longStrings": {
+      "pattern": "[\"'][A-Za-z0-9+/=]{100,}[\"']",
+      "severity": "info",
+      "description": "Contains suspiciously long encoded string"
+    },
+    "stringConcat": {
+      "pattern": "([\"'][a-z]{1,3}[\"']\\s*\\+\\s*){5,}",
+      "severity": "info",
+      "description": "Excessive string concatenation (possible obfuscation)"
+    }
+  },
+  "skillMd": {
+    "fakePrerequisites": {
+      "pattern": "(download.*binary.*from|install.*binary.*from.*http|prerequisite.*http.*download|before.*using.*download.*http|grab.*binary.*from.*http)",
+      "severity": "warning",
+      "description": "Instructs user to download external binaries"
+    },
+    "externalUrls": {
+      "pattern": "https?://(?!github\\.com|clawhub\\.com|docs\\.openclaw|npmjs\\.com|pypi\\.org|brew\\.sh|nodejs\\.org|python\\.org)[^\\s)\"'>]+\\.(exe|msi|dmg|pkg|deb|rpm|AppImage|bat|ps1|rar|7z)",
+      "severity": "critical",
+      "description": "Links to external executable/archive downloads"
+    },
+    "promptInjection": {
+      "pattern": "(ignore.*previous.*instructions?|disregard.*above|you\\s+are\\s+now|new\\s+instructions?:\\s*(?:you|from|ignore|do)|override.*instructions?|forget.*everything|act\\s+as\\s+if|pretend.*you\\s+are|from\\s+now\\s+on.*you\\s+will|IMPORTANT:.*ignore|do\\s+not\\s+follow.*previous)",
+      "severity": "critical",
+      "description": "Prompt injection attempt detected in SKILL.md"
+    },
+    "hiddenCommands": {
+      "pattern": "(<!--[^>]*(?:curl|wget|exec|eval|rm\\s|chmod)[^>]*-->|\\[\\]\\([^)]*(?:javascript|data):|<script)",
+      "severity": "critical",
+      "description": "Hidden commands in markdown comments or links"
+    },
+    "passwordProtected": {
+      "pattern": "(extract.*password.*archive|archive.*password.*extract|zip.*password|unzip.*-P\\s+['\"])",
+      "severity": "critical",
+      "description": "Password-protected archive (classic AV evasion technique)"
+    }
+  }
+}

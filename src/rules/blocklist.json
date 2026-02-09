@@ -1,0 +1,61 @@
+{
+  "domains": [
+    "webhook.site",
+    "pipedream.net",
+    "requestbin.com",
+    "hookbin.com",
+    "beeceptor.com",
+    "requestcatcher.com",
+    "burpcollaborator.net",
+    "interact.sh",
+    "canarytokens.com",
+    "dnslog.cn",
+    "ngrok.io",
+    "ngrok-free.app",
+    "serveo.net",
+    "localhost.run",
+    "portmap.io",
+    "pagekite.me",
+    "telebit.cloud",
+    "loca.lt",
+    "trycloudflare.com",
+    "transfer.sh",
+    "file.io",
+    "temp.sh",
+    "0x0.st",
+    "hastebin.com",
+    "paste.ee",
+    "dpaste.org",
+    "ghostbin.com",
+    "rentry.co"
+  ],
+  "ips": [
+    "91.92.242.30",
+    "91.92.242.0/24",
+    "185.220.101.0/24",
+    "45.154.98.0/24"
+  ],
+  "discordWebhookPattern": "https://discord\\.com/api/webhooks/\\d+/[\\w-]+",
+  "telegramBotPattern": "https://api\\.telegram\\.org/bot[\\w:]+/",
+  "slackWebhookPattern": "https://hooks\\.slack\\.com/services/[\\w/]+",
+  "knownMaliciousAuthors": [
+    "hightower6eu"
+  ],
+  "suspiciousTlds": [
+    ".xyz",
+    ".top",
+    ".buzz",
+    ".click",
+    ".link",
+    ".surf",
+    ".icu",
+    ".monster",
+    ".pw",
+    ".cc",
+    ".tk",
+    ".ml",
+    ".ga",
+    ".cf",
+    ".gq"
+  ]
+}

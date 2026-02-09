@@ -1,0 +1,30 @@
+{
+  "name": "clawguard",
+  "version": "1.0.0",
+  "description": "Security scanner for OpenClaw skills — detect malicious patterns before installing",
+  "type": "module",
+  "main": "src/cli.js",
+  "bin": {
+    "clawguard": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test test/run.js"
+  },
+  "keywords": [
+    "openclaw",
+    "security",
+    "scanner",
+    "malware",
+    "skill",
+    "clawhub"
+  ],
+  "author": "ClawGuard",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "glob": "^10.3.10",
+    "ora": "^8.0.1"
+  }
+}
