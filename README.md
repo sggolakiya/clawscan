@@ -1,6 +1,15 @@
-# 🛡️ ClawScan
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sggolakiya/clawscan/main/logo.png" alt="ClawScan" width="120">
+</p>
 
-**Security scanner for OpenClaw skills — detect malicious patterns before installing.**
+<h1 align="center">ClawScan</h1>
+<p align="center"><strong>Security scanner for OpenClaw skills — detect malicious patterns before installing.</strong></p>
+<p align="center">
+  <a href="https://www.npmjs.com/package/clawscan"><img src="https://img.shields.io/npm/v/clawscan?color=blue" alt="npm"></a>
+  <a href="https://github.com/sggolakiya/clawscan/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT"></a>
+  <a href="https://clawscan.dev"><img src="https://img.shields.io/badge/web-clawscan.dev-blue" alt="website"></a>
+  <a href="https://x.com/clawscandev"><img src="https://img.shields.io/badge/follow-@clawscandev-black" alt="Twitter"></a>
+</p>
 
 With [341+ malicious skills discovered on ClawHub](https://koisecurity.com/openclaw-malware-report-2026), ClawScan helps you scan skills *before* installation to catch credential stealers, reverse shells, obfuscated payloads, and other threats.
 
