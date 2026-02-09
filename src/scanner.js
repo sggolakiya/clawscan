@@ -9,6 +9,7 @@ import { analyzeNetwork } from './analyzers/network.js';
 import { analyzeCredentials } from './analyzers/credentials.js';
 import { analyzeObfuscation } from './analyzers/obfuscation.js';
 import { analyzeTyposquat } from './analyzers/typosquat.js';
+import { analyzePromptInjection } from './analyzers/prompt-injection.js';
 
 const ANALYZERS = [
   { name: 'SKILL.md Analysis', fn: analyzeSkillMd },
@@ -17,6 +18,7 @@ const ANALYZERS = [
   { name: 'Credential Analysis', fn: analyzeCredentials },
   { name: 'Obfuscation Detection', fn: analyzeObfuscation },
   { name: 'Typosquat Detection', fn: analyzeTyposquat },
+  { name: 'Prompt Injection Detection', fn: analyzePromptInjection },
 ];
 
 /**
@@ -49,7 +51,13 @@ function detectDangerousCombinations(findings) {
   const hasEnvAccess = ruleIds.has('envFileAccess') || ruleIds.has('clawbotPaths');
   const hasObfuscation = ruleIds.has('jsObfuscator') || ruleIds.has('obfuscationTool') || ruleIds.has('longLine');
   const hasBase64 = ruleIds.has('base64Exec');
-  const hasPromptInjection = ruleIds.has('promptInjection');
+  const hasPromptInjection = ruleIds.has('promptInjection') || ruleIds.has('roleHijack') || 
+    ruleIds.has('instructionOverride') || ruleIds.has('authoritySpoofing') || 
+    ruleIds.has('steganoInstructions') || ruleIds.has('conversationManip');
+  const hasInvisibleChars = ruleIds.has('invisibleChars');
+  const hasHiddenComment = ruleIds.has('hiddenComment');
+  const hasDataExfil = ruleIds.has('dataExfilPrompt');
+  const hasPrivEsc = ruleIds.has('privEscalation');
   const hasFakePrereq = ruleIds.has('fakePrerequisites');
   const hasHiddenCmds = ruleIds.has('hiddenCommands');
   const hasExternalUrls = ruleIds.has('externalUrls');
@@ -70,6 +78,21 @@ function detectDangerousCombinations(findings) {
 
   // Prompt injection
   if (hasPromptInjection) comboScore += 50;
+
+  // Invisible characters (steganographic attack)
+  if (hasInvisibleChars) comboScore += 40;
+
+  // Hidden comment instructions
+  if (hasHiddenComment) comboScore += 35;
+
+  // Data exfiltration via prompt
+  if (hasDataExfil) comboScore += 50;
+
+  // Privilege escalation via prompt
+  if (hasPrivEsc) comboScore += 40;
+
+  // Prompt injection + data exfil = worst case scenario
+  if (hasPromptInjection && hasDataExfil) comboScore += 20;
 
   // Hidden commands in markdown
   if (hasHiddenCmds) comboScore += 50;
