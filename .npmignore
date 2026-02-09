@@ -1,4 +1,11 @@
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
 test/
+fixtures/
+.github/
 PLAN.md
-.gitignore
-clawscan-logo.png
+ROADMAP.md
+.npmrc

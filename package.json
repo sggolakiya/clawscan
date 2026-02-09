@@ -1,11 +1,11 @@
 {
   "name": "clawscan",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Security scanner for OpenClaw skills — detect malicious patterns before installing",
   "type": "module",
   "main": "src/cli.js",
   "bin": {
-    "clawscan": "./src/cli.js"
+    "clawscan": "src/cli.js"
   },
   "scripts": {
     "start": "node src/cli.js",
@@ -22,7 +22,7 @@
   "author": "ClawScan <hey@clawscan.dev>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sggolakiya/clawscan"
+    "url": "git+https://github.com/sggolakiya/clawscan.git"
   },
   "homepage": "https://clawscan.dev",
   "license": "MIT",
