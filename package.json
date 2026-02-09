@@ -19,7 +19,12 @@
     "skill",
     "clawhub"
   ],
-  "author": "ClawGuard",
+  "author": "ClawScan <hey@clawscan.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sggolakiya/clawscan"
+  },
+  "homepage": "https://clawscan.dev",
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.3.0",

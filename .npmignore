@@ -1,0 +1,4 @@
+test/
+*.png
+PLAN.md
+.gitignore
