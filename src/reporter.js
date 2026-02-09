@@ -33,7 +33,7 @@ export function formatReport(results, options = {}) {
 
   // Header
   lines.push('');
-  lines.push(chalk.bold.white('  🛡️  ClawGuard Security Report'));
+  lines.push(chalk.bold.white('  🛡️  ClawScan Security Report'));
   lines.push(hr);
   lines.push(`  ${chalk.dim('Target:')}  ${results.target}`);
   lines.push(`  ${chalk.dim('Scanned:')} ${new Date(results.timestamp).toLocaleString()}`);
@@ -111,7 +111,7 @@ export function formatReport(results, options = {}) {
   }
 
   lines.push(hr);
-  lines.push(chalk.dim('  ClawGuard v1.0.0 — https://github.com/sggolakiya/clawguard'));
+  lines.push(chalk.dim('  ClawScan v1.0.0 — https://github.com/sggolakiya/clawscan'));
   lines.push('');
 
   return lines.join('\n');

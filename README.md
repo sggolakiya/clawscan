@@ -1,11 +1,11 @@
-# 🛡️ ClawGuard
+# 🛡️ ClawScan
 
 **Security scanner for OpenClaw skills — detect malicious patterns before installing.**
 
-With [341+ malicious skills discovered on ClawHub](https://koisecurity.com/openclaw-malware-report-2026), ClawGuard helps you scan skills *before* installation to catch credential stealers, reverse shells, obfuscated payloads, and other threats.
+With [341+ malicious skills discovered on ClawHub](https://koisecurity.com/openclaw-malware-report-2026), ClawScan helps you scan skills *before* installation to catch credential stealers, reverse shells, obfuscated payloads, and other threats.
 
 <pre>
-  🛡️  ClawGuard Security Report
+  🛡️  ClawScan Security Report
 ────────────────────────────────────────────────────────
   Target:  ./suspicious-skill
   Scanned: 2/9/2026, 1:30:00 PM
@@ -30,29 +30,29 @@ With [341+ malicious skills discovered on ClawHub](https://koisecurity.com/openc
 
 ```bash
 # Clone and install globally
-git clone https://github.com/sggolakiya/clawguard.git
-cd clawguard
+git clone https://github.com/sggolakiya/clawscan.git
+cd clawscan
 npm install
 npm link
 
 # Or run directly
-npx clawguard scan ./path-to-skill
+npx clawscan scan ./path-to-skill
 ```
 
 ## Usage
 
 ```bash
 # Scan a local skill directory
-clawguard scan ./my-skill
+clawscan scan ./my-skill
 
 # Scan with verbose output (shows info-level findings)
-clawguard scan ./my-skill --verbose
+clawscan scan ./my-skill --verbose
 
 # Output as JSON (for CI/CD pipelines)
-clawguard scan ./my-skill --json
+clawscan scan ./my-skill --json
 
 # Scan a skill from a URL (downloads and extracts automatically)
-clawguard scan https://github.com/user/skill-name/archive/main.zip
+clawscan scan https://github.com/user/skill-name/archive/main.zip
 ```
 
 ### Exit Codes
@@ -93,7 +93,7 @@ clawguard scan https://github.com/user/skill-name/archive/main.zip
 
 ## Blocklist
 
-ClawGuard maintains a blocklist of known malicious infrastructure from the [Koi Security report](https://koisecurity.com/openclaw-malware-report-2026):
+ClawScan maintains a blocklist of known malicious infrastructure from the [Koi Security report](https://koisecurity.com/openclaw-malware-report-2026):
 
 - **IPs:** `91.92.242.30` and related ranges
 - **Domains:** `webhook.site`, `ngrok.io`, `pipedream.net`, and 25+ data exfiltration services
@@ -102,7 +102,7 @@ ClawGuard maintains a blocklist of known malicious infrastructure from the [Koi 
 ## Architecture
 
 ```
-clawguard/
+clawscan/
 ├── src/
 │   ├── cli.js              # CLI entry point (Commander.js)
 │   ├── scanner.js           # Orchestrator — runs analyzers, aggregates results
@@ -138,7 +138,7 @@ In February 2026, Koi Security [reported](https://koisecurity.com/openclaw-malwa
 - Reverse shells hidden in seemingly functional skills
 - Typosquatting of popular skill names
 
-VirusTotal added OpenClaw scanning support, but it's **reactive** — scanning skills after upload. ClawGuard is **proactive** — scan before you install.
+VirusTotal added OpenClaw scanning support, but it's **reactive** — scanning skills after upload. ClawScan is **proactive** — scan before you install.
 
 ## License
 

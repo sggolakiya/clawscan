@@ -9,7 +9,7 @@ import { formatReport } from './reporter.js';
 const program = new Command();
 
 program
-  .name('clawguard')
+  .name('clawscan')
   .description('🛡️  Security scanner for OpenClaw skills — detect malicious patterns before installing')
   .version('1.0.0');
 
@@ -23,7 +23,7 @@ program
   .action(async (target, options) => {
     if (!options.json) {
       console.log('');
-      console.log(chalk.bold.white('  🛡️  ClawGuard — OpenClaw Skill Security Scanner'));
+      console.log(chalk.bold.white('  🛡️  ClawScan — OpenClaw Skill Security Scanner'));
       console.log('');
     }
 
@@ -63,7 +63,7 @@ program
   .command('version')
   .description('Show version')
   .action(() => {
-    console.log('clawguard v1.0.0');
+    console.log('clawscan v1.0.0');
   });
 
 // Default to help if no command
