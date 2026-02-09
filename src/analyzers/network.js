@@ -9,6 +9,39 @@ const MAX_FILE_SIZE = 1024 * 1024;
 
 const NETWORK_RULES = patterns.network;
 
+function isValidIPv4(ip) {
+  const parts = ip.split('.');
+  if (parts.length !== 4) return false;
+  return parts.every(p => {
+    if (!/^\d+$/.test(p)) return false;
+    const n = Number(p);
+    return n >= 0 && n <= 255;
+  });
+}
+
+function ipToInt(ip) {
+  const [a, b, c, d] = ip.split('.').map(Number);
+  // Use unsigned 32-bit arithmetic for CIDR math.
+  return (((a << 24) >>> 0) + (b << 16) + (c << 8) + d) >>> 0;
+}
+
+function isInCidr(ip, cidr) {
+  const [baseIp, prefixRaw] = cidr.split('/');
+  const prefix = Number(prefixRaw);
+  if (!isValidIPv4(ip) || !isValidIPv4(baseIp) || !Number.isInteger(prefix) || prefix < 0 || prefix > 32) {
+    return false;
+  }
+
+  if (prefix === 0) return true;
+  const mask = (0xffffffff << (32 - prefix)) >>> 0;
+  return (ipToInt(ip) & mask) === (ipToInt(baseIp) & mask);
+}
+
+function extractIPv4s(line) {
+  const matches = line.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || [];
+  return matches.filter(isValidIPv4);
+}
+
 export async function analyzeNetwork(skillPath) {
   const findings = [];
 
@@ -54,18 +87,24 @@ export async function analyzeNetwork(skillPath) {
       }
     }
 
-    // Check blocklisted IPs
-    for (const ip of blocklist.ips) {
-      const ipBase = ip.replace(/\/\d+$/, '');
+    // Check blocklisted IPs/CIDRs
+    for (const blocked of blocklist.ips) {
+      const isCidr = blocked.includes('/');
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(ipBase)) {
+        const line = lines[i];
+        const lineIps = extractIPv4s(line);
+        const matched = isCidr
+          ? lineIps.some(ip => isInCidr(ip, blocked))
+          : lineIps.includes(blocked);
+
+        if (matched) {
           findings.push({
             analyzer: 'network',
             severity: 'critical',
             file: relPath,
             line: i + 1,
-            message: `References blocklisted IP: ${ip}`,
-            match: lines[i].trim().substring(0, 120),
+            message: `References blocklisted IP: ${blocked}`,
+            match: line.trim().substring(0, 120),
             ruleId: 'blocklistedIP'
           });
         }
@@ -73,7 +112,7 @@ export async function analyzeNetwork(skillPath) {
     }
 
     // Check Discord webhooks
-    const discordRegex = new RegExp(blocklist.discordWebhookPattern, 'g');
+    const discordRegex = new RegExp(blocklist.discordWebhookPattern, 'i');
     for (let i = 0; i < lines.length; i++) {
       if (discordRegex.test(lines[i])) {
         findings.push({
@@ -85,12 +124,11 @@ export async function analyzeNetwork(skillPath) {
           match: lines[i].trim().substring(0, 120),
           ruleId: 'discordWebhook'
         });
-        discordRegex.lastIndex = 0;
       }
     }
 
     // Check Telegram bots
-    const telegramRegex = new RegExp(blocklist.telegramBotPattern, 'g');
+    const telegramRegex = new RegExp(blocklist.telegramBotPattern, 'i');
     for (let i = 0; i < lines.length; i++) {
       if (telegramRegex.test(lines[i])) {
         findings.push({
@@ -102,12 +140,11 @@ export async function analyzeNetwork(skillPath) {
           match: lines[i].trim().substring(0, 120),
           ruleId: 'telegramBot'
         });
-        telegramRegex.lastIndex = 0;
       }
     }
 
     // Check Slack webhooks
-    const slackRegex = new RegExp(blocklist.slackWebhookPattern, 'g');
+    const slackRegex = new RegExp(blocklist.slackWebhookPattern, 'i');
     for (let i = 0; i < lines.length; i++) {
       if (slackRegex.test(lines[i])) {
         findings.push({
@@ -119,7 +156,6 @@ export async function analyzeNetwork(skillPath) {
           match: lines[i].trim().substring(0, 120),
           ruleId: 'slackWebhook'
         });
-        slackRegex.lastIndex = 0;
       }
     }
 

@@ -13,12 +13,17 @@ const RULES = patterns.skillMd;
  * Extract fenced code blocks from markdown and analyze them as scripts
  */
 async function analyzeCodeBlocks(content, findings) {
-  const codeBlockRegex = /```[a-z]*\n((?:(?!```)[\s\S])*?)```/g;
+  const codeBlockRegex = /```[^\n]*\n([\s\S]*?)```/g;
   let match;
   const blocks = [];
   
   while ((match = codeBlockRegex.exec(content)) !== null) {
-    blocks.push(match[1]);
+    const fencedBlock = match[0];
+    const code = match[1];
+    const openingFenceOffset = fencedBlock.indexOf('\n') + 1;
+    const codeStartOffset = match.index + openingFenceOffset;
+    const startLine = content.slice(0, codeStartOffset).split('\n').length;
+    blocks.push({ code, startLine });
   }
   
   if (blocks.length === 0) return;
@@ -29,7 +34,7 @@ async function analyzeCodeBlocks(content, findings) {
   try {
     for (let i = 0; i < blocks.length; i++) {
       const blockPath = join(tmpDir, `block_${i}.sh`);
-      await writeFile(blockPath, blocks[i]);
+      await writeFile(blockPath, blocks[i].code);
     }
     
     // Run all analyzers on the extracted code blocks
@@ -44,8 +49,16 @@ async function analyzeCodeBlocks(content, findings) {
       try {
         const blockFindings = await fn(tmpDir);
         for (const f of blockFindings) {
+          const blockIndexMatch = f.file?.match(/^block_(\d+)\.sh$/);
+          const blockIndex = blockIndexMatch ? Number(blockIndexMatch[1]) : null;
+          const blockMeta = blockIndex !== null ? blocks[blockIndex] : null;
           // Map back to SKILL.md context
-          f.file = `SKILL.md (code block)`;
+          f.file = 'SKILL.md';
+          if (blockMeta && typeof f.line === 'number') {
+            f.line = blockMeta.startLine + f.line - 1;
+          } else {
+            f.line = null;
+          }
           f.message = `[In code block] ${f.message}`;
           findings.push(f);
         }
