@@ -1,6 +1,6 @@
 {
   "name": "clawscan",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Security scanner for OpenClaw skills — detect malicious patterns before installing",
   "type": "module",
   "main": "src/cli.js",

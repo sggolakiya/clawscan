@@ -1,8 +1,60 @@
-import { readFile } from 'fs/promises';
+import { readFile, writeFile, mkdtemp, rm } from 'fs/promises';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import patterns from '../rules/patterns.json' with { type: 'json' };
+import { analyzeScripts } from './scripts.js';
+import { analyzeNetwork } from './network.js';
+import { analyzeCredentials } from './credentials.js';
+import { analyzeObfuscation } from './obfuscation.js';
 
 const RULES = patterns.skillMd;
+
+/**
+ * Extract fenced code blocks from markdown and analyze them as scripts
+ */
+async function analyzeCodeBlocks(content, findings) {
+  const codeBlockRegex = /```[a-z]*\n((?:(?!```)[\s\S])*?)```/g;
+  let match;
+  const blocks = [];
+  
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    blocks.push(match[1]);
+  }
+  
+  if (blocks.length === 0) return;
+
+  // Write code blocks to temp files and scan them
+  const tmpDir = await mkdtemp(join(tmpdir(), 'clawscan-codeblocks-'));
+  
+  try {
+    for (let i = 0; i < blocks.length; i++) {
+      const blockPath = join(tmpDir, `block_${i}.sh`);
+      await writeFile(blockPath, blocks[i]);
+    }
+    
+    // Run all analyzers on the extracted code blocks
+    const analyzers = [
+      { fn: analyzeScripts, label: 'scripts' },
+      { fn: analyzeNetwork, label: 'network' },
+      { fn: analyzeCredentials, label: 'credentials' },
+      { fn: analyzeObfuscation, label: 'obfuscation' },
+    ];
+    
+    for (const { fn, label } of analyzers) {
+      try {
+        const blockFindings = await fn(tmpDir);
+        for (const f of blockFindings) {
+          // Map back to SKILL.md context
+          f.file = `SKILL.md (code block)`;
+          f.message = `[In code block] ${f.message}`;
+          findings.push(f);
+        }
+      } catch {}
+    }
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+  }
+}
 
 export async function analyzeSkillMd(skillPath) {
   const findings = [];
@@ -42,6 +94,9 @@ export async function analyzeSkillMd(skillPath) {
       }
     }
   }
+
+  // Extract and analyze code blocks inside SKILL.md
+  await analyzeCodeBlocks(content, findings);
 
   // Check for suspiciously short SKILL.md (low-effort malicious skills)
   if (content.trim().length < 50) {
